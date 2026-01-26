@@ -1,0 +1,5 @@
+stage,seconds,format
+1_Load_IO,5.663945436477661,parquet
+2_NLP_Definition,0.782991886138916,parquet
+3_MapReduce_Calc,73.40268182754517,parquet
+Total_Execution,80.12287092208862,parquet
