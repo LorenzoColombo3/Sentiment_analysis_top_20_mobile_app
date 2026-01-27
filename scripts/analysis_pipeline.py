@@ -26,7 +26,7 @@ metrics = []
 t_global_start = now()
 print(f"AVVIO ANALISI")
 
-# FASE 1: CARICAMENTO (I/O Puro)
+# FASE 1: CARICAMENTO
 print("\n[1] Caricamento Dati")
 t0 = now()
 
@@ -65,6 +65,7 @@ custom_stopwords = [
     "app", "apps", "application", "apk",
     "android", "ios", "google", "play", "store",
     "phone", "mobile", "cell", "device", "tablet", "screen",
+    "subway", "surfer",
     "install", "installed", "uninstall", "download", "downloading",
     "update", "updating", "updated", "version",
     "internet", "wifi", "data", "connection",

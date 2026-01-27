@@ -6,10 +6,6 @@ import os
 import urllib.parse
 import sys
 
-if os.environ.get('DISPLAY','') == '':
-    print('Nessun display grafico rilevato. Utilizzo backend "Agg".')
-    matplotlib.use('Agg')
-
 try:
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
@@ -26,7 +22,7 @@ sns.set_theme(style="whitegrid", context="talk")
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.bbox'] = 'tight'
 
-print("1. Caricamento e Pulizia Dati...")
+print("1. Caricamento e Pulizia Dati")
 df_global = pd.read_csv(FILE_GLOBAL)
 df_apps = pd.read_csv(FILE_APPS)
 df_apps['app_name'] = df_apps['app_name'].apply(lambda x: urllib.parse.unquote(str(x)))
@@ -34,7 +30,7 @@ target_apps_candidates = ['Facebook', 'Candy Crush Saga', 'Dropbox', 'WhatsApp',
 available_apps = df_apps['app_name'].unique()
 selected_apps = [app for app in target_apps_candidates if any(app.lower() in s.lower() for s in available_apps)][:4]
 
-print("2. Generazione Grafico 1: Global Ecosystem (Macro)...")
+print("2. Generazione Grafico 1: Global Ecosystem")
 top_pos = df_global[df_global['rating'] == 5.0].head(10).copy()
 top_neg = df_global[df_global['rating'] == 1.0].head(10).copy()
 top_neg['count'] = top_neg['count'] * -1
@@ -58,7 +54,7 @@ plt.tight_layout()
 plt.savefig('1_global_sentiment.png')
 
 def create_drilldown_chart(rating, title, color_hex, filename):
-    print(f"3. Generazione Grafico: {filename}...")
+    print(f"3. Generazione Grafico: {filename}")
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle(title, fontsize=22, fontweight='bold', y=0.98)
     
@@ -91,5 +87,4 @@ create_drilldown_chart(1.0, 'Drill-Down: Why Users Complain? (Negative Drivers)'
 
 create_drilldown_chart(5.0, 'Drill-Down: Why Users Love It? (Killer Features)', "#0044ff", '3_app_success_factors.png')
 
-print("\n--- TUTTO COMPLETATO ---")
-print("Controlla i 3 file PNG generati.")
+print("finito generazionte grafici!")

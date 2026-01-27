@@ -19,7 +19,7 @@ spark.sparkContext.setLogLevel("WARN")
 
 def now(): return time.time()
 print(f"{'='*50}")
-print(f"AVVIO ANALISI PER APPLICAZIONE (Drill-Down)")
+print(f"AVVIO ANALISI PER APPLICAZIONE")
 print(f"{'='*50}")
 
 # 1. CARICANMENTO
@@ -88,21 +88,18 @@ df_filt = remover.transform(df_tok)
 ngram = NGram(n=2, inputCol="filtered", outputCol="ngrams")
 df_nlp = ngram.transform(df_filt)
 
-# 3. ANALISI PER APP (Window Functions)
+# 3. ANALISI PER APP
 print("\n[3] Aggregazione per App e Ranking")
 t0 = now()
 df_exploded = df_nlp.select("app_name", "rating", explode(col("ngrams")).alias("bigram"))
 df_clean_bigrams = df_exploded.withColumn("bigram", trim(col("bigram"))) \
-    .filter(length("bigram") > 3) \
-    .filter(~col("bigram").contains("  "))
+    .filter(length("bigram") > 3).filter(~col("bigram").contains("  "))
 df_counts = df_clean_bigrams.groupBy("app_name", "rating", "bigram").count()
 windowSpec = Window.partitionBy("app_name", "rating").orderBy(desc("count"))
-df_ranked = df_counts.withColumn("rank", row_number().over(windowSpec)) \
-                     .filter(col("rank") <= 10)
+df_ranked = df_counts.withColumn("rank", row_number().over(windowSpec)).filter(col("rank") <= 10)
 df_ranked.cache()
 count_results = df_ranked.count()
 print(f"Calcolo completato in {now() - t0:.2f}s")
-print(f"Trovate top keywords per ogni app")
 
 # 4. EXPORT
 print("\n[4] Salvataggio Report")
@@ -112,5 +109,4 @@ pdf_results = df_ranked.select("app_name", "rating", "rank", "bigram", "count") 
 out_file = os.path.join(OUTPUT_DIR, "app_insights_drilldown.csv")
 pdf_results.to_csv(out_file, index=False)
 print(f"Report salvato")
-
 spark.stop()
